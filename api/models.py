@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import Avg
 from django.db.models import Q
 
-# Create your models here.
+from api.constants import TEAM_STATS_TOTAL_FIELDS
 
 
 class Level(models.IntegerChoices):
@@ -31,27 +31,28 @@ class TeamStatistic(models.Model):
     total_better = models.IntegerField(default=0)
     total_excellent = models.IntegerField(default=0)
 
-    def update_stats(self, mood_level, previous_level):
-        total_field_dict = {
-            1: "total_sad",
-            2: "total_normal",
-            3: "total_good",
-            4: "total_better",
-            5: "total_excellent",
-        }
-
-        if previous_level in total_field_dict:
-            old_total = getattr(self, total_field_dict[previous_level])
-            setattr(self, total_field_dict[mood_level.mood_level], old_total - 1)
-
-        if mood_level.mood_level in total_field_dict:
-            old_total = getattr(self, total_field_dict[mood_level.mood_level])
-            setattr(self, total_field_dict[mood_level.mood_level], old_total + 1)
-
+    def update_stats(self, mood_level, old_value):
+        if old_value:
+            self.decrement_total_level(old_value)
+        self.increment_total_level(mood_level.mood_level)
         avg_mood = MoodLevel.objects.filter(Q(employee__team=self.team)).aggregate(
             Avg("mood_level")
         )
         self.avg_mood = avg_mood["mood_level__avg"]
+
+    def increment_total_level(self, total_col_name):
+        if total_col_name not in TEAM_STATS_TOTAL_FIELDS:
+            return
+
+        old_total = getattr(self, TEAM_STATS_TOTAL_FIELDS[total_col_name])
+        setattr(self, TEAM_STATS_TOTAL_FIELDS[total_col_name], old_total + 1)
+
+    def decrement_total_level(self, total_col_name):
+        if total_col_name not in TEAM_STATS_TOTAL_FIELDS:
+            return
+
+        old_total = getattr(self, TEAM_STATS_TOTAL_FIELDS[total_col_name])
+        setattr(self, TEAM_STATS_TOTAL_FIELDS[total_col_name], old_total - 1)
 
 
 class Employee(models.Model):

@@ -3,6 +3,7 @@ from http import HTTPStatus
 import pytest
 from rest_framework.test import APIClient
 
+from api.constants import TEAM_STATS_TOTAL_FIELDS
 from api.models import Employee
 from api.models import MoodLevel
 
@@ -42,14 +43,6 @@ class TestMonitorAPI:
 
     @pytest.mark.parametrize("mood_level", [1, 2, 3, 4, 5])
     def test_add_mood_level_and_check_team_stats(self, mood_level):
-        field_dict = {
-            1: "total_sad",
-            2: "total_normal",
-            3: "total_good",
-            4: "total_better",
-            5: "total_excellent",
-        }
-
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
         data = {"mood_level": mood_level}
@@ -71,7 +64,7 @@ class TestMonitorAPI:
         team_id = team_data.pop("team")
         assert team_id == 1
 
-        total_field = field_dict[mood_level]
+        total_field = TEAM_STATS_TOTAL_FIELDS[mood_level]
         total_no = team_data.pop(total_field)
         assert total_no == 1
 
@@ -89,14 +82,6 @@ class TestMonitorAPI:
     def test_add_multiple_members_mood_level_and_check_team_stats(
         self, emp_one_mood, emp_two_mood
     ):
-        field_dict = {
-            1: "total_sad",
-            2: "total_normal",
-            3: "total_good",
-            4: "total_better",
-            5: "total_excellent",
-        }
-
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
         res = self.client.post(
@@ -128,7 +113,7 @@ class TestMonitorAPI:
         assert team_id == 1
 
         if emp_one_mood == emp_two_mood:
-            total_field = field_dict[emp_one_mood]
+            total_field = TEAM_STATS_TOTAL_FIELDS[emp_one_mood]
             assert total_field in team_data
 
             total_no = team_data.pop(total_field)
@@ -136,7 +121,7 @@ class TestMonitorAPI:
 
         else:
             for field in [emp_one_mood, emp_two_mood]:
-                total_field = field_dict[field]
+                total_field = TEAM_STATS_TOTAL_FIELDS[field]
                 assert total_field in team_data
                 total_no = team_data.pop(total_field)
                 assert total_no == 1
@@ -153,14 +138,6 @@ class TestMonitorAPI:
         [(1, 3), (3, 1), (2, 5), (4, 3), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
     )
     def test_add_mood_level_with_multiple_teams(self, team_one_emp, team_two_emp):
-        field_dict = {
-            1: "total_sad",
-            2: "total_normal",
-            3: "total_good",
-            4: "total_better",
-            5: "total_excellent",
-        }
-
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
         res = self.client.post(
@@ -194,7 +171,7 @@ class TestMonitorAPI:
         assert "team" in team_data
         assert team_data["team"] == 1
 
-        total_field = field_dict[team_one_emp]
+        total_field = TEAM_STATS_TOTAL_FIELDS[team_one_emp]
         assert total_field in team_data
         assert team_data[total_field] == 1
 
@@ -212,6 +189,6 @@ class TestMonitorAPI:
         assert "team" in team_data
         assert team_data["team"] == 2
 
-        total_field = field_dict[team_two_emp]
+        total_field = TEAM_STATS_TOTAL_FIELDS[team_two_emp]
         assert total_field in team_data
         assert team_data[total_field] == 1
