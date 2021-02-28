@@ -46,3 +46,10 @@
    python3 manage.py runserver
    ```
 5. Open browser <http://127.0.0.1:8000/swagger/>
+
+### Development tools we are using
+
+1. [Pre-commit as Git Pre-commit hooks](https://pre-commit.com/)
+2. [Black as Code Formatter](https://github.com/psf/black)
+3. [Reorder Python Imports as Code formatter](https://github.com/asottile/reorder_python_imports)
+4. [Flake8 as Linker](https://github.com/PyCQA/flake8)
