@@ -16,7 +16,7 @@ class TestMonitorAPI:
     def test_add_mood_level(self):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
-        data = {"mood_level": 1}
+        data = {"level": 1}
         res = self.client.post("/api/mood_levels", data, format="json")
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
@@ -24,28 +24,26 @@ class TestMonitorAPI:
         record = MoodLevel.objects.all()
         assert len(record) == 1
         assert record[0].employee.id == emp_1.id
-        assert record[0].mood_level == data["mood_level"]
+        assert record[0].level == data["level"]
 
-    @pytest.mark.parametrize("mood_level", [1, 2, 3, 4, 5])
-    def test_add_mood_level_and_update(self, mood_level):
+    @pytest.mark.parametrize("level", [1, 2, 3, 4, 5])
+    def test_add_mood_level_and_update(self, level):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
-        res = self.client.post(
-            "/api/mood_levels", {"mood_level": mood_level}, format="json"
-        )
+        res = self.client.post("/api/mood_levels", {"level": level}, format="json")
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
 
         record = MoodLevel.objects.all()
         assert len(record) == 1
         assert record[0].employee.id == emp_1.id
-        assert record[0].mood_level == mood_level
+        assert record[0].level == level
 
-    @pytest.mark.parametrize("mood_level", [1, 2, 3, 4, 5])
-    def test_add_mood_level_and_check_team_stats(self, mood_level):
+    @pytest.mark.parametrize("level", [1, 2, 3, 4, 5])
+    def test_add_mood_level_and_check_team_stats(self, level):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
-        data = {"mood_level": mood_level}
+        data = {"level": level}
         res = self.client.post("/api/mood_levels", data, format="json")
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
@@ -64,13 +62,13 @@ class TestMonitorAPI:
         team_id = team_data.pop("team")
         assert team_id == 1
 
-        total_field = TEAM_STATS_TOTAL_FIELDS[mood_level]
+        total_field = TEAM_STATS_TOTAL_FIELDS[level]
         total_no = team_data.pop(total_field)
         assert total_no == 1
 
         assert "avg_mood" in team_data
         avg_mood = team_data.pop("avg_mood")
-        assert avg_mood == mood_level
+        assert avg_mood == level
 
         for value in team_data.values():
             assert value == 0
@@ -85,7 +83,7 @@ class TestMonitorAPI:
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
         res = self.client.post(
-            "/api/mood_levels", {"mood_level": emp_one_mood}, format="json"
+            "/api/mood_levels", {"level": emp_one_mood}, format="json"
         )
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
@@ -93,7 +91,7 @@ class TestMonitorAPI:
         emp_2 = Employee.objects.filter(name="Test 2").first()
         self.client.force_authenticate(user=emp_2.user)
         res = self.client.post(
-            "/api/mood_levels", {"mood_level": emp_two_mood}, format="json"
+            "/api/mood_levels", {"level": emp_two_mood}, format="json"
         )
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
@@ -141,7 +139,7 @@ class TestMonitorAPI:
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
         res = self.client.post(
-            "/api/mood_levels", {"mood_level": team_one_emp}, format="json"
+            "/api/mood_levels", {"level": team_one_emp}, format="json"
         )
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
@@ -149,7 +147,7 @@ class TestMonitorAPI:
         emp_2 = Employee.objects.filter(name="Test 3").first()
         self.client.force_authenticate(user=emp_2.user)
         res = self.client.post(
-            "/api/mood_levels", {"mood_level": team_two_emp}, format="json"
+            "/api/mood_levels", {"level": team_two_emp}, format="json"
         )
         assert res.status_code == HTTPStatus.CREATED
 

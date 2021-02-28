@@ -34,11 +34,11 @@ class TeamStatistic(models.Model):
     def update_stats(self, mood_level, old_value):
         if old_value:
             self.decrement_total_level(old_value)
-        self.increment_total_level(mood_level.mood_level)
+        self.increment_total_level(mood_level.level)
         avg_mood = MoodLevel.objects.filter(Q(employee__team=self.team)).aggregate(
-            Avg("mood_level")
+            Avg("level")
         )
-        self.avg_mood = avg_mood["mood_level__avg"]
+        self.avg_mood = avg_mood["level__avg"]
 
     def increment_total_level(self, total_col_name):
         if total_col_name not in TEAM_STATS_TOTAL_FIELDS:
@@ -68,7 +68,7 @@ class MoodLevel(models.Model):
     class Meta:
         unique_together = [["employee", "record_date"]]
 
-    mood_level = models.IntegerField(choices=Level.choices)
+    level = models.IntegerField(choices=Level.choices)
     employee = models.ForeignKey(
         Employee, on_delete=models.CASCADE, unique_for_date="record_date"
     )

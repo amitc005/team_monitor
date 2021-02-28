@@ -11,7 +11,7 @@ from api.utils import update_team_statistic
 class MoodLevelSerializer(ModelSerializer):
     class Meta:
         model = MoodLevel
-        fields = ["mood_level"]
+        fields = ["level"]
         read_only_fields = ["record_date"]
 
     def create(self, validated_data):
@@ -23,7 +23,7 @@ class MoodLevelSerializer(ModelSerializer):
         else:
             old_model = deepcopy(instance)
 
-        instance.mood_level = validated_data["mood_level"]
+        instance.level = validated_data["level"]
         instance.save()
         update_team_statistic(employee.team, instance, old_model)
         return instance
