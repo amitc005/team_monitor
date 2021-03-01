@@ -5,6 +5,7 @@ from rest_framework.test import APIClient
 
 from api.constants import TEAM_STATS_TOTAL_FIELDS
 from api.models import Employee
+from api.models import Level
 from api.models import MoodLevel
 
 
@@ -16,17 +17,27 @@ class TestMonitorAPI:
     def test_add_mood_level(self):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
-        data = {"level": 1}
-        res = self.client.post("/api/mood_levels", data, format="json")
+        res = self.client.post(
+            "/api/mood_levels", {"level": Level.SAD.value}, format="json"
+        )
         assert res.status_code == HTTPStatus.CREATED
         self.client.force_authenticate(user=None)
 
         record = MoodLevel.objects.all()
         assert len(record) == 1
         assert record[0].employee.id == emp_1.id
-        assert record[0].level == data["level"]
+        assert record[0].level == Level.SAD.value
 
-    @pytest.mark.parametrize("level", [1, 2, 3, 4, 5])
+    @pytest.mark.parametrize(
+        "level",
+        [
+            Level.SAD.value,
+            Level.NORMAL.value,
+            Level.GOOD.value,
+            Level.BETTER.value,
+            Level.EXCELLENT.value,
+        ],
+    )
     def test_add_mood_level_and_update(self, level):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
@@ -39,7 +50,16 @@ class TestMonitorAPI:
         assert record[0].employee.id == emp_1.id
         assert record[0].level == level
 
-    @pytest.mark.parametrize("level", [1, 2, 3, 4, 5])
+    @pytest.mark.parametrize(
+        "level",
+        [
+            Level.SAD.value,
+            Level.NORMAL.value,
+            Level.GOOD.value,
+            Level.BETTER.value,
+            Level.EXCELLENT.value,
+        ],
+    )
     def test_add_mood_level_and_check_team_stats(self, level):
         emp_1 = Employee.objects.filter(name="Test 1").first()
         self.client.force_authenticate(user=emp_1.user)
@@ -75,7 +95,17 @@ class TestMonitorAPI:
 
     @pytest.mark.parametrize(
         "emp_one_mood, emp_two_mood",
-        [(1, 3), (3, 1), (2, 5), (4, 3), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
+        [
+            (Level.SAD.value, Level.GOOD.value),
+            (Level.GOOD.value, Level.SAD.value),
+            (Level.NORMAL.value, Level.EXCELLENT.value),
+            (Level.BETTER.value, Level.GOOD.value),
+            (Level.SAD.value, Level.SAD.value),
+            (Level.NORMAL.value, Level.NORMAL.value),
+            (Level.GOOD.value, Level.GOOD.value),
+            (Level.BETTER.value, Level.BETTER.value),
+            (Level.EXCELLENT.value, Level.EXCELLENT.value),
+        ],
     )
     def test_add_multiple_members_mood_level_and_check_team_stats(
         self, emp_one_mood, emp_two_mood
@@ -133,7 +163,17 @@ class TestMonitorAPI:
 
     @pytest.mark.parametrize(
         "team_one_emp, team_two_emp",
-        [(1, 3), (3, 1), (2, 5), (4, 3), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)],
+        [
+            (Level.SAD.value, Level.GOOD.value),
+            (Level.GOOD.value, Level.SAD.value),
+            (Level.NORMAL.value, Level.EXCELLENT.value),
+            (Level.BETTER.value, Level.GOOD.value),
+            (Level.SAD.value, Level.SAD.value),
+            (Level.NORMAL.value, Level.NORMAL.value),
+            (Level.GOOD.value, Level.GOOD.value),
+            (Level.BETTER.value, Level.BETTER.value),
+            (Level.EXCELLENT.value, Level.EXCELLENT.value),
+        ],
     )
     def test_add_mood_level_with_multiple_teams(self, team_one_emp, team_two_emp):
         emp_1 = Employee.objects.filter(name="Test 1").first()
