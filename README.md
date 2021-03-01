@@ -60,3 +60,8 @@
 2. `make stop` for stopping the team monitor docker container
 3. `make test` for running test inside the team monitor docker container
 4. `make clean` for deleting the team monitor docker container
+
+### Django Admin user credentials:
+
+1. username: test, password: Pass123!@#
+1. username: adam, password: Pass123!@#
