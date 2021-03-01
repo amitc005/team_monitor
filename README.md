@@ -6,7 +6,7 @@
 
 1. Cloning this repository using git.
    ```bash
-   git clone https://github.com/Texada/srm_rest_api.git
+   git clone https://github.com/amitc005/team_monitor.git
    ```
 
 ### Run the dev environment with Docker.
