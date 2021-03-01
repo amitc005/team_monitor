@@ -5,8 +5,6 @@ services:
       context: docker/
     volumes:
       - .:/usr/local/team_monitor/
-    ports:
-      - 8000:8000
     privileged: true
     entrypoint:
-      - /usr/local/team_monitor//scripts/entrypoint.sh
+      - /usr/local/team_monitor/scripts/run_test.sh
