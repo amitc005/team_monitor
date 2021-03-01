@@ -53,3 +53,10 @@
 2. [Black as Code Formatter](https://github.com/psf/black)
 3. [Reorder Python Imports as Code formatter](https://github.com/asottile/reorder_python_imports)
 4. [Flake8 as Linker](https://github.com/PyCQA/flake8)
+
+### Useful make utility commands:
+
+1. `make or make run` for creating team monitor docker container.
+2. `make stop` for stopping the team monitor docker container
+3. `make test` for running test inside the team monitor docker container
+4. `make clean` for deleting the team monitor docker container
