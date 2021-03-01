@@ -7,7 +7,7 @@ run:
 	docker-compose -f docker-compose.yml up -d
 
 test:
-	docker-compose -f docker-compose.yml -f docker-compose-test.yml up
+	docker-compose -f docker-compose.yml -f docker-compose.test.yml up
 stop:
 	docker-compose stop
 clean:
